@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send SMS</title>
+</head>
+<body>
+    <h2>Send SMS to Technician</h2>
+    <form id="smsForm">
+        <label for="technicianNumber">Technician Number:</label>
+        <input type="text" id="technicianNumber" required><br><br>
+        <label for="message">Message:</label>
+        <input type="text" id="message" required><br><br>
+        <button type="submit">Send SMS</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('smsForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const technicianNumber = document.getElementById('technicianNumber').value;
+            const message = document.getElementById('message').value;
+
+            const responseDiv = document.getElementById('response');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ technicianNumber, message })
+                });
+
+                if (response.ok) {
+                    const jsonResponse = await response.json();
+                    responseDiv.innerText = `SMS Sent: ${jsonResponse.message}`;
+                } else {
+                    responseDiv.innerText = `Error: ${response.statusText}`;
+                }
+            } catch (error) {
+                responseDiv.innerText = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
